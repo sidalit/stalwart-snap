@@ -1,0 +1,32 @@
+#!/bin/sh
+set -eu
+
+umask 077
+mkdir -p "$SNAP_COMMON/data" "$SNAP_COMMON/logs" "$SNAP_COMMON/credentials"
+chmod 700 "$SNAP_COMMON/credentials"
+cd "$SNAP_COMMON"
+
+# Setting CONFIG_PATH makes upstream ignore all CLI arguments.
+unset CONFIG_PATH STALWART_RECOVERY_ADMIN STALWART_RECOVERY_MODE
+STALWART_RECOVERY_MODE_PORT="$(snapctl get bootstrap-port)"
+export STALWART_RECOVERY_MODE_PORT
+
+if [ ! -e "$SNAP_COMMON/config.json" ]; then
+    # Supply a root-readable random credential so upstream never prints it
+    # to the journal. It applies only while the setup wizard is active.
+    credential="$SNAP_COMMON/credentials/bootstrap-password"
+    if [ ! -s "$credential" ]; then
+        random="$(od -An -N32 -tx1 /dev/urandom)"
+        printf '%s' "$random" | tr -d ' \n' > "$credential.tmp"
+        printf '\n' >> "$credential.tmp"
+        chmod 600 "$credential.tmp"
+        mv -f "$credential.tmp" "$credential"
+    fi
+    STALWART_RECOVERY_ADMIN="admin:$(cat "$credential")"
+    export STALWART_RECOVERY_ADMIN
+else
+    # The wizard displays a different permanent administrator password.
+    rm -f "$SNAP_COMMON/credentials/bootstrap-password"
+fi
+
+exec "$SNAP/bin/stalwart" --config "$SNAP_COMMON/config.json"

@@ -1,0 +1,86 @@
+name: stalwart
+base: core26
+version: '1.0.3'
+title: Stalwart
+icon: snap/gui/stalwart.png
+summary: Mail and collaboration server with an integrated administration UI
+description: |
+  Stalwart Community Edition provides SMTP, IMAP, JMAP, POP3, ManageSieve,
+  CalDAV, CardDAV and WebDAV, with spam filtering, DKIM and native TLS.
+  The server is built from source. Its official web administration interface
+  is downloaded from upstream on first start.
+
+  **Getting started**
+
+  Open http://127.0.0.1:8080/admin and sign in as admin. Read the temporary
+  bootstrap password with:
+
+     sudo cat /var/snap/stalwart/common/credentials/bootstrap-password
+
+  Complete the setup wizard and save the permanent administrator credentials
+  it displays. Keep the default local storage and log paths, then run:
+
+     sudo snap restart stalwart.daemon
+
+  After this restart, the normal mail and HTTPS listeners accept network
+  connections. Configure domains, accounts, DNS and TLS in the web interface.
+  Configuration and local mail data persist in /var/snap/stalwart/common.
+license: AGPL-3.0-only
+grade: stable
+confinement: strict
+website: https://stalw.art
+source-code:
+  - https://github.com/stalwartlabs/stalwart
+  - https://github.com/sidalit/stalwart-snap
+issues:
+  - https://github.com/stalwartlabs/stalwart/issues
+  - https://github.com/sidalit/stalwart-snap/issues
+contact: https://github.com/sidalit/stalwart-snap/issues
+
+platforms:
+  amd64:
+  arm64:
+
+layout:
+  /var/lib/stalwart:
+    bind: $SNAP_COMMON/data
+  /var/log/stalwart:
+    bind: $SNAP_COMMON/logs
+
+apps:
+  stalwart:
+    command: bin/stalwart
+    plugs:
+      - network
+      - network-bind
+  daemon:
+    command: bin/stalwart-launch
+    daemon: simple
+    restart-condition: on-failure
+    plugs:
+      - network
+      - network-bind
+
+parts:
+  stalwart:
+    plugin: rust
+    source: https://github.com/stalwartlabs/stalwart.git
+    source-tag: v$SNAPCRAFT_PROJECT_VERSION
+    rust-channel: stable
+    rust-path: [crates/main]
+    rust-cargo-parameters:
+      - --locked
+      - --no-default-features
+      - --features=sqlite,postgres,mysql,rocks,s3,redis,azure,nats
+    build-packages: [build-essential, clang, cmake, libclang-dev, pkg-config, patch]
+    stage-packages: [ca-certificates]
+    override-build: |
+      # Restrict initial setup to loopback and pin the official runtime WebUI.
+      patch --batch --fuzz=0 -p1 < "$CRAFT_PROJECT_DIR/snap/patches/snap-defaults.patch"
+      craftctl default
+      install -d "$CRAFT_PART_INSTALL/share/doc/stalwart"
+      cp -r LICENSES "$CRAFT_PART_INSTALL/share/doc/stalwart/"
+
+  scripts:
+    plugin: dump
+    source: snap/local

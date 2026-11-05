@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+port="$(snapctl get bootstrap-port)"
+if [ -z "$port" ]; then
+    port=8080
+    snapctl set bootstrap-port="$port"
+fi
+case "$port" in
+    *[!0-9]* | 0* | ??????*)
+        echo 'bootstrap-port must be an integer from 1 to 65535 without leading zeros' >&2
+        exit 1
+        ;;
+esac
+if [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+    echo 'bootstrap-port must be an integer from 1 to 65535' >&2
+    exit 1
+fi
+
+if snapctl services "$SNAP_INSTANCE_NAME.daemon" | awk 'NR > 1 {print $3}' | grep -qx active; then
+    snapctl restart "$SNAP_INSTANCE_NAME.daemon"
+fi
