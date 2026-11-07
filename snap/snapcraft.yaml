@@ -72,7 +72,6 @@ parts:
       - --no-default-features
       - --features=sqlite,postgres,mysql,rocks,s3,redis,azure,nats
     build-packages: [build-essential, clang, cmake, libclang-dev, pkg-config, patch]
-    stage-packages: [ca-certificates]
     override-build: |
       # Restrict initial setup to loopback and pin the official runtime WebUI.
       patch --batch --fuzz=0 -p1 < "$CRAFT_PROJECT_DIR/snap/patches/snap-defaults.patch"
