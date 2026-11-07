@@ -87,7 +87,6 @@ git clone https://github.com/sidalit/stalwart-snap.git
 cd stalwart-snap
 sudo snap install snapcraft --classic
 snapcraft pack
-sudo snap install --dangerous ./stalwart_*.snap
 ```
 
 ## Support
