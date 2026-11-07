@@ -69,7 +69,6 @@ parts:
     rust-channel: stable
     rust-path: [crates/main]
     rust-cargo-parameters:
-      - --locked
       - --no-default-features
       - --features=sqlite,postgres,mysql,rocks,s3,redis,azure,nats
     build-packages: [build-essential, clang, cmake, libclang-dev, pkg-config, patch]
