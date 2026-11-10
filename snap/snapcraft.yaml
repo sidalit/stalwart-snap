@@ -77,7 +77,12 @@ parts:
       - on arm64:
           # Like upstream's arm64 builds, support kernels with 16K or 64K pages.
           - JEMALLOC_SYS_WITH_LG_PAGE: '16'
-    build-packages: [build-essential, clang, cmake, libclang-dev, pkg-config]
+    build-packages:
+      - build-essential
+      - clang
+      - cmake
+      - libclang-dev
+      - pkg-config
     override-build: |
       craftctl default
       install -d "$CRAFT_PART_INSTALL/share/doc/stalwart"
