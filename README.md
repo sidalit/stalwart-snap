@@ -29,7 +29,7 @@ sudo snap install stalwart
 sudo cat /var/snap/stalwart/common/credentials/bootstrap-password
 ```
 
-Open [http://127.0.0.1:8080/admin](http://127.0.0.1:8080/admin) and sign in as `admin` with the temporary password. The first start downloads the official WebUI from GitHub. For a remote server, run `ssh -L 8080:127.0.0.1:8080 user@server`, then open the same local URL.
+Open [http://127.0.0.1:8080/admin](http://127.0.0.1:8080/admin) and sign in as `admin` with the temporary password. The first start downloads the official WebUI from GitHub. The setup wizard listens on all interfaces over plain HTTP, so block port `8080` at the firewall until setup is complete. For a remote server, run `ssh -L 8080:127.0.0.1:8080 user@server`, then open the same local URL instead of sending the password across the network.
 
 Complete the wizard with your mail hostname and domain. Keep the default storage path `/var/lib/stalwart/` and log path `/var/log/stalwart/`. Save the permanent administrator credentials displayed at the end, then restart:
 
@@ -50,7 +50,7 @@ sudo snap get stalwart
 sudo snap set stalwart bootstrap-port=8081
 ```
 
-Changes restart a running service. `bootstrap-port` applies only to setup on `127.0.0.1`. Configure normal listeners and TLS in the web interface, then restart the service. The normal defaults listen on all interfaces:
+Changes restart a running service. `bootstrap-port` applies only to the setup wizard, which listens on all interfaces. Configure normal listeners and TLS in the web interface, then restart the service. The normal defaults listen on all interfaces:
 
 | Protocol | TCP port | Transport |
 | --- | --- | --- |
