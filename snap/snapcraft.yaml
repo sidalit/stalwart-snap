@@ -71,6 +71,9 @@ parts:
     rust-cargo-parameters:
       - --no-default-features
       - --features=sqlite,postgres,mysql,rocks,s3,redis,azure,nats
+    build-environment:
+      # Fat LTO runs the 16 GB arm64 runners out of memory while linking.
+      - CARGO_PROFILE_RELEASE_LTO: thin
     build-packages: [build-essential, clang, cmake, libclang-dev, pkg-config, patch]
     override-build: |
       # Restrict initial setup to loopback and pin the official runtime WebUI.
