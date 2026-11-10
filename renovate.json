@@ -7,15 +7,5 @@
       "matchDepNames": ["upstream"],
       "overridePackageName": "stalwartlabs/stalwart"
     }
-  ],
-  "customManagers": [
-    {
-      "customType": "regex",
-      "managerFilePatterns": ["snap/patches/snap-defaults.patch"],
-      "matchStrings": ["https://github\\.com/stalwartlabs/webui/releases/download/(?<currentValue>v\\d+\\.\\d+\\.\\d+)/webui\\.zip"],
-      "depNameTemplate": "stalwartlabs/webui",
-      "datasourceTemplate": "github-releases",
-      "versioningTemplate": "semver"
-    }
   ]
 }
