@@ -1,6 +1,6 @@
 name: stalwart
 base: core26
-version: '1.2.0'
+version: '1.2.1'
 title: Stalwart
 icon: snap/gui/stalwart.png
 summary: Mail and collaboration server with an integrated administration UI
